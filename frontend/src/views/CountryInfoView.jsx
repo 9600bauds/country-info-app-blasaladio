@@ -1,19 +1,22 @@
 import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 
 import PopulationChart from '../components/PopulationChart';
 import BorderCountriesWidget from '../components/BorderCountriesWidget';
+import ErrorView from './ErrorView';
 
 const CountryInfoView = () => {
   const { countryCode } = useParams();
   const [countryInfo, setCountryInfo] = useState(null);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchCountryInfo = async () => {
       const response = await fetch(`/api/countries/${countryCode}`);
       if (!response.ok) {
-        const errorText = await response.text(); // Fetch error text if available
-        throw new Error(errorText || 'Internal server error!');
+        const errorText = await response.text() || 'Internal server error!';
+        setError(errorText);
+        throw new Error(errorText);
       }
       const data = await response.json();
       setCountryInfo(data);
@@ -22,10 +25,18 @@ const CountryInfoView = () => {
     fetchCountryInfo();
   }, [countryCode]);
 
+  if (error) {
+    return (
+      <ErrorView error={error}>
+        <Link className="btn btn-info" to={`/`}>← Back to all countries</Link>
+      </ErrorView>
+    );
+  }
+  
   if (!countryInfo) {
     return <div>Loading...</div>;
   }
-
+  
   return (
     <div className="container-fluid bg-light py-5">
       <div className="container">
@@ -50,6 +61,8 @@ const CountryInfoView = () => {
           </div>
         </div>
 
+        <Link className="btn btn-info" to={`/`}>← Back to all countries</Link>
+        
       </div>
     </div>
   );
