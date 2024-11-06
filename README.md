@@ -52,7 +52,7 @@ Production mode:
 By default, it will start in port 3003.
 
 - Navigate to the frontend and start it in development node:
-- 
+
 `npm run dev`
 
   - This will run it in dev mode with Vite. Check `vite.config.js`, by default, it's setup to use port 5173, and to assume the backend is using port 3003.
