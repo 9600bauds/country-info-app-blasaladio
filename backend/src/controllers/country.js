@@ -47,6 +47,7 @@ const getCountryInfo = async (req, res) => {
 
     //Respond with json data
     res.json({
+      "commonName": countryCommonName,
       "borders": borderCountries,
       "population": populationData,
       "flag": flagUrl
