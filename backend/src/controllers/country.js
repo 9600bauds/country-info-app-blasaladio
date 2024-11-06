@@ -13,15 +13,54 @@ const getAllCountries = async (req, res) => {
 };
 
 const getCountryInfo = async (req, res) => {
+  async function fetchGeneralInfo(countryCode) {
+    try {
+      const response = await axios.get(`${process.env.COUNTRY_INFO_BASE_URL}/${countryCode}`);
+      return response;
+    } catch (error) {
+      if (process.env.NODE_ENV === 'development') {
+        console.error(`Error fetching general country data: ${error.message}`);
+      }
+      throw new Error(`Error fetching general country data: ${error.message}`);
+    }
+  }
+
+  async function fetchPopulation(countryCommonName) {
+    try {
+      const response = await axios.post(
+        process.env.POPULATION_BASE_URL,
+        { "country": countryCommonName }
+      );
+      return response.data.data.populationCounts;
+    } catch (error) {
+      if (process.env.NODE_ENV === 'development') {
+        console.error(`Error fetching population data: ${error.message}`);
+      }
+      throw new Error(`Error fetching population data: ${error.message}`);
+    }
+  }
+
+  async function fetchFlag(countryCommonName) {
+    try {
+      const response = await axios.post(
+        process.env.FLAGS_BASE_URL,
+        { "country": countryCommonName }
+      );
+      return response.data.data.flag;
+    } catch (error) {
+      if (process.env.NODE_ENV === 'development') {
+        console.error(`Error fetching flag data: ${error.message}`);
+      }
+      throw new Error(`Error fetching flag data: ${error.message}`);
+    }
+  }
+
   try {
     const { countryCode } = req.params;
-    if (!countryCode) {
-      return res.status(400).json({ error: 'Country code is required!' });
-    }
 
     // We only have the country code yet, so we need to do an initial query to get more info.
     // Ideally this endpoint would tell us the ISO2 and ISO3 codes, but unfortunately, the country's common name is what we have to work with.
-    const countryInfoResponse = await axios.get(`${process.env.COUNTRY_INFO_BASE_URL}/${countryCode}`);
+    const countryInfoResponse = await fetchGeneralInfo(countryCode);
 
     const countryCommonName = countryInfoResponse.data.commonName;
     if (!countryCommonName) {
@@ -30,20 +69,11 @@ const getCountryInfo = async (req, res) => {
 
     // With the country's common name, we can make the other requests, now.
     // I'm not a fan of the destructuring here, I'd prefer to have each const be explicitly declared in one line. But this works for having parallel requests.
-    const [populationResponse, flagResponse] = await Promise.all([
-      axios.post(
-        process.env.POPULATION_BASE_URL,
-        { "country": countryCommonName }
-      ),
-      axios.post(
-        process.env.FLAGS_BASE_URL,
-        { "country": countryCommonName }
-      ),
+    const [borderCountries, populationData, flagUrl] = await Promise.all([
+      countryInfoResponse.data.borders, // This info was in our very first query
+      fetchPopulation(countryCommonName),
+      fetchFlag(countryCommonName),
     ])
-
-    const borderCountries = countryInfoResponse.data.borders; // This info was in our very first query
-    const populationData = populationResponse.data.data.populationCounts; // Note data.data, the promise's data field includes a data field
-    const flagUrl = flagResponse.data.data.flag; // Note data.data, the promise's data field includes a data field
 
     //Respond with json data
     res.json({
@@ -54,9 +84,9 @@ const getCountryInfo = async (req, res) => {
     });
   } catch (error) {
     if (process.env.NODE_ENV === 'development') {
-      console.log("Internal error in the country controller:", error) //Some more robust logging is needed here
+      console.log("Internal error in the country controller:", error.message) //Some more robust logging is needed here
     }
-    res.status(500).json({ error: 'Error fetching country info' });
+    res.status(500).json({ error: error.message });
   }
 };
 

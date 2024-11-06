@@ -10,13 +10,13 @@ const CountryInfoView = () => {
 
   useEffect(() => {
     const fetchCountryInfo = async () => {
-      try {
-        const response = await fetch(`/api/countries/${countryCode}`);
-        const data = await response.json();
-        setCountryInfo(data);
-      } catch (error) {
-        console.error('Error fetching country info:', error);
+      const response = await fetch(`/api/countries/${countryCode}`);
+      if (!response.ok) {
+        const errorText = await response.text(); // Fetch error text if available
+        throw new Error(errorText || 'Internal server error!');
       }
+      const data = await response.json();
+      setCountryInfo(data);
     };
 
     fetchCountryInfo();
