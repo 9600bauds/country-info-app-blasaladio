@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import ErrorView from './ErrorView';
 
@@ -11,11 +11,11 @@ const CountryListView = () => {
     // We need to define this as an async function for it to properly work in the useEffect
     const fetchCountries = async () => {
       try {
-        const response = await fetch('/api/countries/');
+        const response = await fetch(`/api/countries/`);
         const data = await response.json();
         setCountries(data);
       } catch (error) {
-        console.error('Error fetching countries:', error); // Todo: use some sort of toast notification?
+        console.error(`Error fetching countries:`, error); // Todo: use some sort of toast notification?
         setError(`Error fetching countries: ${error}`);
       }
     };

@@ -1,3 +1,5 @@
+import React from 'react';
+
 const BorderCountry = ({ countryCode, commonName }) => {
   return (
     <li className="list-group-item">

@@ -1,14 +1,14 @@
-const axios = require('axios');
+const axios = require(`axios`);
 
 const getAllCountries = async (req, res) => {
   try {
     if (!process.env.ALL_COUNTRIES_URL) {
-      return res.status(500).json({ error: 'Server configuration error: ALL_COUNTRIES_URL is not set in the .env!' });
+      return res.status(500).json({ error: `Server configuration error: ALL_COUNTRIES_URL is not set in the .env!` });
     }
     const response = await axios.get(process.env.ALL_COUNTRIES_URL);
     res.json(response.data);
-  } catch (error) {
-    res.status(500).json({ error: 'Could not fetch the list of countries!' }); //Unspecified server error
+  } catch {
+    res.status(500).json({ error: `Could not fetch the list of countries!` }); //Unspecified server error
   }
 };
 
@@ -18,7 +18,7 @@ const getCountryInfo = async (req, res) => {
       const response = await axios.get(`${process.env.COUNTRY_INFO_BASE_URL}/${countryCode}`);
       return response;
     } catch (error) {
-      if (process.env.NODE_ENV === 'development') {
+      if (process.env.NODE_ENV === `development`) {
         console.error(`Error fetching general country data: ${error.message}`);
       }
       throw new Error(`Error fetching general country data: ${error.message}`);
@@ -33,7 +33,7 @@ const getCountryInfo = async (req, res) => {
       );
       return response.data.data.populationCounts;
     } catch (error) {
-      if (process.env.NODE_ENV === 'development') {
+      if (process.env.NODE_ENV === `development`) {
         console.error(`Error fetching population data: ${error.message}`);
       }
       throw new Error(`Error fetching population data: ${error.message}`);
@@ -48,7 +48,7 @@ const getCountryInfo = async (req, res) => {
       );
       return response.data.data.flag;
     } catch (error) {
-      if (process.env.NODE_ENV === 'development') {
+      if (process.env.NODE_ENV === `development`) {
         console.error(`Error fetching flag data: ${error.message}`);
       }
       throw new Error(`Error fetching flag data: ${error.message}`);
@@ -73,7 +73,7 @@ const getCountryInfo = async (req, res) => {
       countryInfoResponse.data.borders, // This info was in our very first query
       fetchPopulation(countryCommonName),
       fetchFlag(countryCommonName),
-    ])
+    ]);
 
     //Respond with json data
     res.json({
@@ -83,8 +83,8 @@ const getCountryInfo = async (req, res) => {
       "flag": flagUrl
     });
   } catch (error) {
-    if (process.env.NODE_ENV === 'development') {
-      console.log("Internal error in the country controller:", error.message) //Some more robust logging is needed here
+    if (process.env.NODE_ENV === `development`) {
+      console.log(`Internal error in the country controller:`, error.message); //Some more robust logging is needed here
     }
     res.status(500).json({ error: error.message });
   }

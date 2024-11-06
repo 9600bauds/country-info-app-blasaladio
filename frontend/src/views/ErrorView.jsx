@@ -1,3 +1,5 @@
+import React from 'react';
+
 const ErrorView = ({ error, children }) => {
   return (
     <div className="container text-center py-5">
@@ -11,7 +13,7 @@ const ErrorView = ({ error, children }) => {
       </div>
       {children}
     </div>
-  )
+  );
 };
 
 export default ErrorView;

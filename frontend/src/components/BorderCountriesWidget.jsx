@@ -1,3 +1,4 @@
+import React from 'react';
 import BorderCountry from "./BorderCountry";
 
 const BorderCountriesWidget = ({ borders }) => {
