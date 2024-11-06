@@ -1,6 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 
+
+import PopulationChart from '../components/PopulationChart';
+import BorderCountriesWidget from '../components/BorderCountriesWidget';
+
+
+
 const CountryInfoView = () => {
   const { countryCode } = useParams();
   const [countryInfo, setCountryInfo] = useState(null);
@@ -23,22 +29,27 @@ const CountryInfoView = () => {
     return <div>Loading...</div>;
   }
 
-  return (
-    <div>
-      <h1>{countryInfo.commonName}</h1>
-      <img src={countryInfo.flag} />
+return (
+    <div className="container-fluid bg-light py-5">
+      <div className="container">
 
-      <h2>Border Countries</h2>
-      <ul>
-        {countryInfo.borders.map((border) => (
-          <li key={border.countryCode}>
-            <a href={`/${border.countryCode}`}>{border.commonName}</a>
-          </li>
-        ))}
-      </ul>
+        <div className="card shadow-sm">
+          <img src={countryInfo.flag} className="card-img-top" alt={countryInfo.commonName} />
+          <div className="card-body">
+            <h1 className="card-title">{countryInfo.commonName}</h1>
+          </div>
+        </div>
 
-      <h2>Population</h2>
-      TODO
+        <div className="row">
+          <div className="col-md-6">
+            <PopulationChart data={countryInfo.population} />
+          </div>
+          <div className="col-md-6">
+            <BorderCountriesWidget borders={countryInfo.borders} />
+          </div>
+        </div>
+
+      </div>
     </div>
   );
 };
