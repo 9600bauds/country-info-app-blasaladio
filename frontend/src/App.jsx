@@ -1,13 +1,16 @@
-import { useState } from 'react'
-import './App.css'
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import CountryListView from './views/CountryListView';
 
-function App() {
-
+const App = () => {
   return (
-    <>
-      <h1>Hello world!</h1>
-    </>
-  )
-}
+    <Router>
+      <div>
+        <Routes>
+          <Route path="/" element={<CountryListView />} />
+        </Routes>
+      </div>
+    </Router>
+  );
+};
 
-export default App
+export default App;
